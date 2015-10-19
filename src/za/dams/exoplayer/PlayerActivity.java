@@ -20,12 +20,14 @@ import com.google.android.exoplayer.ExoPlayer;
 import com.google.android.exoplayer.MediaFormat;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
+
 import za.dams.exoplayer.player.DashRendererBuilder;
 import za.dams.exoplayer.player.DemoPlayer;
 import za.dams.exoplayer.player.DemoPlayer.RendererBuilder;
 import za.dams.exoplayer.player.ExtractorRendererBuilder;
 import za.dams.exoplayer.player.HlsRendererBuilder;
 import za.dams.exoplayer.player.SmoothStreamingRendererBuilder;
+
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.google.android.exoplayer.metadata.GeobMetadata;
 import com.google.android.exoplayer.metadata.PrivMetadata;
@@ -79,13 +81,19 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
     DemoPlayer.Listener, DemoPlayer.CaptionListener, DemoPlayer.Id3MetadataListener,
     AudioCapabilitiesReceiver.Listener {
 
+  // For use within demo app code.
+  public static final String CONTENT_ID_EXTRA = "content_id";
+  public static final String CONTENT_TYPE_EXTRA = "content_type";
   public static final int TYPE_DASH = 0;
   public static final int TYPE_SS = 1;
   public static final int TYPE_HLS = 2;
   public static final int TYPE_OTHER = 3;
 
-  public static final String CONTENT_TYPE_EXTRA = "content_type";
-  public static final String CONTENT_ID_EXTRA = "content_id";
+  // For use when launching the demo app using adb.
+  private static final String CONTENT_EXT_EXTRA = "type";
+  private static final String EXT_DASH = ".mpd";
+  private static final String EXT_SS = ".ism";
+  private static final String EXT_HLS = ".m3u8";
 
   private static final String TAG = "PlayerActivity";
   private static final int MENU_GROUP_TRACKS = 1;
@@ -154,13 +162,14 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
       }
     });
     root.setOnKeyListener(new OnKeyListener() {
-    	@Override
-    	public boolean onKey(View v, int keyCode, KeyEvent event) {
-    		if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_MENU) {
-    			return false;
-    		}
-    		return mediaController.dispatchKeyEvent(event);
-    	}
+      @Override
+      public boolean onKey(View v, int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_ESCAPE
+            || keyCode == KeyEvent.KEYCODE_MENU) {
+          return false;
+        }
+        return mediaController.dispatchKeyEvent(event);
+      }
     });
     root.addOnLayoutChangeListener(new OnLayoutChangeListener() {
 
@@ -208,8 +217,20 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
   }
 
   @Override
+  public void onNewIntent(Intent intent) {
+    releasePlayer();
+    playerPosition = 0;
+    setIntent(intent);
+  }
+
+  @Override
   public void onResume() {
     super.onResume();
+    Intent intent = getIntent();
+    contentUri = intent.getData();
+    contentType = intent.getIntExtra(CONTENT_TYPE_EXTRA,
+        inferContentType(contentUri, intent.getStringExtra(CONTENT_EXT_EXTRA)));
+    contentId = intent.getStringExtra(CONTENT_ID_EXTRA);
     configureSubtitleView();
     if (player == null) {
       preparePlayer(true);
@@ -275,7 +296,7 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
       case TYPE_OTHER:
         return new ExtractorRendererBuilder(this, userAgent, contentUri);
       default:
-    	return new ExtractorRendererBuilder(this, userAgent, contentUri);
+        throw new IllegalStateException("Unsupported type: " + contentType);
     }
   }
 
@@ -657,6 +678,30 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
     CaptioningManager captioningManager =
         (CaptioningManager) getSystemService(Context.CAPTIONING_SERVICE);
     return CaptionStyleCompat.createFromCaptionStyle(captioningManager.getUserStyle());
+  }
+
+  /**
+   * Makes a best guess to infer the type from a media {@link Uri} and an optional overriding file
+   * extension.
+   *
+   * @param uri The {@link Uri} of the media.
+   * @param fileExtension An overriding file extension.
+   * @return The inferred type.
+   */
+  private static int inferContentType(Uri uri, String fileExtension) {
+    String lastPathSegment = !TextUtils.isEmpty(fileExtension) ? "." + fileExtension
+        : uri.getLastPathSegment();
+    if (lastPathSegment == null) {
+      return TYPE_OTHER;
+    } else if (lastPathSegment.endsWith(EXT_DASH)) {
+      return TYPE_DASH;
+    } else if (lastPathSegment.endsWith(EXT_SS)) {
+      return TYPE_SS;
+    } else if (lastPathSegment.endsWith(EXT_HLS)) {
+      return TYPE_HLS;
+    } else {
+      return TYPE_OTHER;
+    }
   }
 
 }
