@@ -12,6 +12,11 @@ public class MediaController extends android.widget.MediaController {
 		super(context);
 	}
 
+	public void setMediaPlayer(MediaPlayerControl player) {
+		// TODO Auto-generated method stub
+		super.setMediaPlayer(player);
+	}
+
 	public static class MediaPlayerControl extends PlayerControl implements ExoPlayer.Listener{
 		private int mPlayerState ;
 		private boolean mSeekPending ;

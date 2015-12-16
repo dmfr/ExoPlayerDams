@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2014 The Android Open Source Project
+<!--
+     Copyright (C) 2014 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -16,46 +17,48 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="za.dams.exoplayer"
-    android:versionCode="1501"
-    android:versionName="1.5.1"
-    android:theme="@style/RootTheme">
+    android:theme="@style/RootTheme"
+    android:versionCode="1503"
+    android:versionName="1.5.3" >
 
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-  <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="22"/>
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="23" />
 
-  <application
-      android:label="@string/application_name"
-      android:icon="@drawable/ic_launcher"
-      android:largeHeap="true"
-      android:allowBackup="false">
-
-    <activity android:name="za.dams.exoplayer.SampleChooserActivity"
-        android:configChanges="keyboardHidden"
-        android:label="@string/application_name">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
-
-    <activity android:name="za.dams.exoplayer.PlayerActivity"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-        android:launchMode="singleInstance"
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/application_name"
-        android:theme="@style/PlayerTheme">
-      <intent-filter>
-        <action android:name="za.dams.exoplayer.action.VIEW"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-        <data android:scheme="http"/>
-        <data android:scheme="https"/>
-        <data android:scheme="content"/>
-        <data android:scheme="asset"/>
-        <data android:scheme="file"/>
-      </intent-filter>
-    </activity>
-
-  </application>
+        android:largeHeap="true" >
+        <activity
+            android:name="za.dams.exoplayer.SampleChooserActivity"
+            android:configChanges="keyboardHidden"
+            android:label="@string/application_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="za.dams.exoplayer.PlayerActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:label="@string/application_name"
+            android:launchMode="singleInstance"
+            android:theme="@style/PlayerTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="content" />
+                <data android:scheme="asset" />
+                <data android:scheme="file" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
+    </application>
 
 </manifest>
