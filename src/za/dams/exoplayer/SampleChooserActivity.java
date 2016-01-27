@@ -116,13 +116,15 @@ public class SampleChooserActivity extends Activity {
 	  startActivityForResult(i,CHOOSE_FILE_REQUESTCODE);	  
   }
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-	  String Fpath = data.getData().getPath();
-	  // do somthing...
-	  Intent mpdIntent = new Intent(this, PlayerActivity.class).setData(Uri.parse(Fpath)) ;
-	  startActivity(mpdIntent);	     
+	  if( data!=null ) {
+	 	  String Fpath = data.getData().getPath();
+		  
+		  // do somthing...
+		  Intent mpdIntent = new Intent(this, PlayerActivity.class).setData(Uri.parse(Fpath)) ;
+		  startActivity(mpdIntent);	     
+	  }
 
 	  super.onActivityResult(requestCode, resultCode, data);
-
   }
   
   
