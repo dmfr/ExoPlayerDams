@@ -70,13 +70,16 @@ public class ExtractorRendererBuilder implements RendererBuilder {
         MediaCodecSelector.DEFAULT, null, true, player.getMainHandler(), player,
         AudioCapabilities.getCapabilities(context), AudioManager.STREAM_MUSIC);
     TrackRenderer textRenderer = new TextTrackRenderer(sampleSource, player,
-        player.getMainHandler().getLooper());
+            player.getMainHandler().getLooper());
+    TrackRenderer textFileRenderer = new TextFileRenderer(player,
+            player.getMainHandler().getLooper());
 
     // Invoke the callback.
     TrackRenderer[] renderers = new TrackRenderer[DemoPlayer.RENDERER_COUNT];
     renderers[DemoPlayer.TYPE_VIDEO] = videoRenderer;
     renderers[DemoPlayer.TYPE_AUDIO] = audioRenderer;
     renderers[DemoPlayer.TYPE_TEXT] = textRenderer;
+    renderers[DemoPlayer.TYPE_TEXTFILE] = textFileRenderer;
     player.onRenderers(renderers, bandwidthMeter);
   }
 

@@ -30,7 +30,9 @@ import com.google.android.exoplayer.audio.AudioTrack;
 import com.google.android.exoplayer.chunk.ChunkSampleSource;
 import com.google.android.exoplayer.chunk.Format;
 import com.google.android.exoplayer.dash.DashChunkSource;
+
 import za.dams.exoplayer.MediaController;
+
 import com.google.android.exoplayer.drm.StreamingDrmSessionManager;
 import com.google.android.exoplayer.hls.HlsSampleSource;
 import com.google.android.exoplayer.metadata.MetadataTrackRenderer.MetadataRenderer;
@@ -43,6 +45,7 @@ import com.google.android.exoplayer.util.DebugTextViewHelper;
 import android.media.MediaCodec.CryptoException;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Surface;
 
 import java.io.IOException;
@@ -152,10 +155,11 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
   public static final int TRACK_DISABLED = ExoPlayer.TRACK_DISABLED;
   public static final int TRACK_DEFAULT = ExoPlayer.TRACK_DEFAULT;
 
-  public static final int RENDERER_COUNT = 4;
+  public static final int RENDERER_COUNT = 5;
   public static final int TYPE_VIDEO = 0;
   public static final int TYPE_AUDIO = 1;
   public static final int TYPE_TEXT = 2;
+  public static final int TYPE_TEXTFILE = 4 ;
   public static final int TYPE_METADATA = 3;
 
   private static final int RENDERER_BUILDING_STATE_IDLE = 1;
@@ -197,6 +201,7 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
     rendererBuildingState = RENDERER_BUILDING_STATE_IDLE;
     // Disable text initially.
     player.setSelectedTrack(TYPE_TEXT, TRACK_DISABLED);
+    //player.setSelectedTrack(TYPE_TEXTFILE, TRACK_DISABLED);
   }
 
   public MediaController.MediaPlayerControl getPlayerControl() {
@@ -513,7 +518,8 @@ public class DemoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventLi
 
   @Override
   public void onCues(List<Cue> cues) {
-    if (captionListener != null && getSelectedTrack(TYPE_TEXT) != TRACK_DISABLED) {
+    if (captionListener != null 
+    		&& (getSelectedTrack(TYPE_TEXT) != TRACK_DISABLED || getSelectedTrack(TYPE_TEXTFILE) != TRACK_DISABLED) ) {
       captionListener.onCues(cues);
     }
   }

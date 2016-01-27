@@ -49,6 +49,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -719,29 +720,13 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
   private void configureSubtitleView() {
     CaptionStyleCompat style;
     float fontScale;
-    if (Util.SDK_INT >= 19) {
-      style = getUserCaptionStyleV19();
-      fontScale = getUserCaptionFontScaleV19();
-    } else {
-      style = CaptionStyleCompat.DEFAULT;
-      fontScale = 1.0f;
-    }
+    
+    style = new CaptionStyleCompat(
+    	      Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null); 
+    fontScale = 1.0f;
+    
     subtitleLayout.setStyle(style);
     subtitleLayout.setFractionalTextSize(SubtitleLayout.DEFAULT_TEXT_SIZE_FRACTION * fontScale);
-  }
-
-  @TargetApi(19)
-  private float getUserCaptionFontScaleV19() {
-    CaptioningManager captioningManager =
-        (CaptioningManager) getSystemService(Context.CAPTIONING_SERVICE);
-    return captioningManager.getFontScale();
-  }
-
-  @TargetApi(19)
-  private CaptionStyleCompat getUserCaptionStyleV19() {
-    CaptioningManager captioningManager =
-        (CaptioningManager) getSystemService(Context.CAPTIONING_SERVICE);
-    return CaptionStyleCompat.createFromCaptionStyle(captioningManager.getUserStyle());
   }
 
   /**
@@ -758,7 +743,14 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
     return Util.inferContentType(lastPathSegment);
   }
 
-  private static final class KeyCompatibleMediaController extends MediaController {
+  @Override
+public void onBackPressed() {
+	Log.w("DAMS","on back pressed") ;
+ 	// TODO Auto-generated method stub
+	super.onBackPressed();
+}
+
+private static final class KeyCompatibleMediaController extends MediaController {
 
     private MediaController.MediaPlayerControl playerControl;
 
@@ -775,6 +767,10 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
       int keyCode = event.getKeyCode();
+      if( keyCode == KeyEvent.KEYCODE_BACK ) {
+    	  ((Activity)getContext()).finish();
+    	  return true ;
+      }
       if (playerControl.canSeekForward() && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
           playerControl.seekTo(playerControl.getCurrentPosition() + 15000); // milliseconds
