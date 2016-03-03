@@ -1,57 +1,59 @@
 package za.dams.exoplayer;
 
-import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.content.Context;
+import android.graphics.Point;
+import android.os.Build;
+import android.view.Display;
+import android.view.WindowManager;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class DemoUtil {
 	// http://stackoverflow.com/questions/21057035/detect-android-navigation-bar-orientation
+	// http://stackoverflow.com/questions/20264268/how-to-get-height-and-width-of-navigation-bar-programmatically/29609679#29609679
 
-	public static boolean hasNavBar (Resources resources)
-	{
-		int id = resources.getIdentifier("config_showNavigationBar", "bool", "android");
-		if (id > 0)
-			return resources.getBoolean(id);
-		else
-			return false;
-	}
+    public static Point getNavigationBarSize(Context context) {
+        Point appUsableSize = getAppUsableScreenSize(context);
+        Point realScreenSize = getRealScreenSize(context);
 
-	public static int getNavigationBarHeight (Resources resources)
-	{
-		if (!DemoUtil.hasNavBar(resources))
-			return 0;
+        // navigation bar on the right
+        if (appUsableSize.x < realScreenSize.x) {
+            //return new Point(realScreenSize.x - appUsableSize.x, appUsableSize.y);
+            return new Point(realScreenSize.x - appUsableSize.x, 0);
+        }
 
-		int orientation = resources.getConfiguration().orientation;
+        // navigation bar at the bottom
+        if (appUsableSize.y < realScreenSize.y) {
+            //return new Point(appUsableSize.x, realScreenSize.y - appUsableSize.y);
+            return new Point(0, realScreenSize.y - appUsableSize.y);
+        }
 
-		//Only phone between 0-599 has navigationbar can move
-		boolean isSmartphone = resources.getConfiguration().smallestScreenWidthDp < 600;
-		if (isSmartphone && Configuration.ORIENTATION_LANDSCAPE == orientation)
-			return 0;
+        // navigation bar is not present
+        return new Point();
+    }
 
-		int id = resources
-				.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape", "dimen", "android");
-		if (id > 0)
-			return resources.getDimensionPixelSize(id);
+    public static Point getAppUsableScreenSize(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size;
+    }
 
-		return 0;
-	}
+    public static Point getRealScreenSize(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        Point size = new Point();
 
-	public static int getNavigationBarWidth (Resources resources)
-	{
-		if (!DemoUtil.hasNavBar(resources))
-			return 0;
+        if (Build.VERSION.SDK_INT >= 17) {
+            display.getRealSize(size);
+        } else if (Build.VERSION.SDK_INT >= 14) {
+            try {
+                size.x = (Integer) Display.class.getMethod("getRawWidth").invoke(display);
+                size.y = (Integer) Display.class.getMethod("getRawHeight").invoke(display);
+            } catch (IllegalAccessException e) {} catch (InvocationTargetException e) {} catch (NoSuchMethodException e) {}
+        }
 
-		int orientation = resources.getConfiguration().orientation;
-
-		//Only phone between 0-599 has navigationbar can move
-		boolean isSmartphone = resources.getConfiguration().smallestScreenWidthDp < 600;
-
-		if (orientation == Configuration.ORIENTATION_LANDSCAPE && isSmartphone)
-		{
-			int id = resources.getIdentifier("navigation_bar_width", "dimen", "android");
-			if (id > 0)
-				return resources.getDimensionPixelSize(id);
-		}
-
-		return 0;
-	}  
+        return size;
+    }
 }

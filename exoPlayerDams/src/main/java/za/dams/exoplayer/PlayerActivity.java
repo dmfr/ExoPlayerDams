@@ -51,6 +51,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -66,7 +67,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLayoutChangeListener;
 import android.view.View.OnTouchListener;
-import android.view.accessibility.CaptioningManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
@@ -172,22 +172,21 @@ public class PlayerActivity extends Activity implements SurfaceHolder.Callback, 
         return mediaController.dispatchKeyEvent(event);
       }
     });
-    root.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+      root.addOnLayoutChangeListener(new OnLayoutChangeListener() {
 
-    	@Override
-    	public void onLayoutChange(View v, int left, int top, int right,
-    			int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) 
-    	{
-    		Log.w("DAMS","Width is "+(right-left)) ;
-    		Log.w("DAMS","Height is "+(bottom-top)) ;
+          @Override
+          public void onLayoutChange(View v, int left, int top, int right,
+                                     int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom)
+          {
+              Point navBarSize = DemoUtil.getNavigationBarSize(PlayerActivity.this) ;
 
-    		FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)mediaController.getLayoutParams();
-    		lp.bottomMargin = (int) (DemoUtil.getNavigationBarHeight(getResources()) * 1.5) ;
-    		lp.rightMargin = (int) (DemoUtil.getNavigationBarWidth(getResources()) * 1.5) ;
-    		lp.leftMargin = (int) (DemoUtil.getNavigationBarWidth(getResources()) * 0.5) ;
-    		mediaController.setLayoutParams(lp);
-    	}
-    });
+              FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams)mediaController.getLayoutParams();
+              lp.bottomMargin = (int) (navBarSize.y * 1.5) ;
+              lp.rightMargin = (int) (navBarSize.x * 1.5) ;
+              lp.leftMargin = (int) (navBarSize.x * 0.5) ;
+              mediaController.setLayoutParams(lp);
+          }
+      });
 
     shutterView = findViewById(R.id.shutter);
     debugRootView = findViewById(R.id.controls_root);
