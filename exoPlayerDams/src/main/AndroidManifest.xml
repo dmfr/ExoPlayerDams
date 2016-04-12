@@ -18,8 +18,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="za.dams.exoplayer"
     android:theme="@style/RootTheme"
-    android:versionCode="1506"
-    android:versionName="1.5.6" >
+    android:versionCode="1507"
+    android:versionName="1.5.7" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -44,9 +44,9 @@
         </activity>
         <activity
             android:name="za.dams.exoplayer.PlayerActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
             android:label="@string/application_name"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:theme="@style/PlayerTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

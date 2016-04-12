@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer.metadata;
+package com.google.android.exoplayer.util.extensions;
 
 /**
- * A metadata that contains parsed ID3 PRIV (Private) frame data associated
- * with time indices.
+ * Output buffer decoded by a {@link Decoder}.
  */
-public final class PrivMetadata {
+public abstract class OutputBuffer extends Buffer {
 
-  public static final String TYPE = "PRIV";
+  /**
+   * The presentation timestamp for the buffer, in microseconds.
+   */
+  public long timestampUs;
 
-  public final String owner;
-  public final byte[] privateData;
-
-  public PrivMetadata(String owner, byte[] privateData) {
-    this.owner = owner;
-    this.privateData = privateData;
-  }
+  /**
+   * Releases the output buffer for reuse. Must be called when the buffer is no longer needed.
+   */
+  public abstract void release();
 
 }

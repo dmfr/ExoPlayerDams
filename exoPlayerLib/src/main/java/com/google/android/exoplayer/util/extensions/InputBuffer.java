@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.android.exoplayer.metadata;
+package com.google.android.exoplayer.util.extensions;
+
+import com.google.android.exoplayer.SampleHolder;
 
 /**
- * A metadata that contains parsed ID3 GEOB (General Encapsulated Object) frame data associated
- * with time indices.
+ * Input buffer to be decoded by a {@link Decoder}.
  */
-public final class GeobMetadata {
+public class InputBuffer extends Buffer {
 
-  public static final String TYPE = "GEOB";
+  public final SampleHolder sampleHolder;
 
-  public final String mimeType;
-  public final String filename;
-  public final String description;
-  public final byte[] data;
+  public InputBuffer() {
+    sampleHolder = new SampleHolder(SampleHolder.BUFFER_REPLACEMENT_MODE_DIRECT);
+  }
 
-  public GeobMetadata(String mimeType, String filename, String description, byte[] data) {
-    this.mimeType = mimeType;
-    this.filename = filename;
-    this.description = description;
-    this.data = data;
+  @Override
+  public void reset() {
+    super.reset();
+    sampleHolder.clearData();
   }
 
 }
