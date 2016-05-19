@@ -796,13 +796,15 @@ private static final class KeyCompatibleMediaController extends MediaController 
     	  ((Activity)getContext()).finish();
     	  return true ;
       }
-      if (playerControl.canSeekForward() && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+      if (playerControl.canSeekForward() && (keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD
+              || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
           playerControl.seekTo(playerControl.getCurrentPosition() + 15000); // milliseconds
           show();
         }
         return true;
-      } else if (playerControl.canSeekBackward() && keyCode == KeyEvent.KEYCODE_MEDIA_REWIND) {
+      } else if (playerControl.canSeekBackward() && (keyCode == KeyEvent.KEYCODE_MEDIA_REWIND
+              || keyCode == KeyEvent.KEYCODE_DPAD_LEFT)) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
           playerControl.seekTo(playerControl.getCurrentPosition() - 5000); // milliseconds
           show();
